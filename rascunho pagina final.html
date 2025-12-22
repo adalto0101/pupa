@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Área do Funcionário | Pupa Terceirização</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --green:#16a34a;
+  --dark:#0f172a;
+  --dark2:#020617;
+  --card:#020617cc;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background:
+    radial-gradient(circle at top, #16a34a22, transparent 40%),
+    linear-gradient(180deg, var(--dark), var(--dark2));
+  color:var(--text);
+}
+
+/* ===== HERO ===== */
+.hero{
+  padding:80px 20px 60px;
+  text-align:center;
+}
+.hero h1{
+  font-size:42px;
+  margin-bottom:10px;
+}
+.hero p{
+  color:var(--muted);
+  max-width:700px;
+  margin:auto;
+  font-size:18px;
+}
+
+/* ===== GRID ===== */
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:0 20px 120px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:30px;
+}
+
+/* ===== CARD ===== */
+.card{
+  background:var(--card);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 20px 40px rgba(0,0,0,.4);
+  transform:translateY(30px);
+  opacity:0;
+  animation:fadeUp .7s ease forwards;
+}
+.card:nth-child(2){animation-delay:.1s}
+.card:nth-child(3){animation-delay:.2s}
+.card:nth-child(4){animation-delay:.3s}
+.card:nth-child(5){animation-delay:.4s}
+
+.card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
+.card .content{
+  padding:22px;
+}
+.card h3{
+  margin:0 0 10px;
+  color:#fff;
+}
+.card p{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.5;
+}
+
+/* ===== HOVER ===== */
+.card:hover{
+  transform:translateY(-6px) scale(1.01);
+  transition:.3s ease;
+}
+
+/* ===== ANIMAÇÃO ===== */
+@keyframes fadeUp{
+  to{opacity:1;transform:none}
+}
+
+/* ===== RESPONSIVO ===== */
+@media(max-width:600px){
+  .hero h1{font-size:32px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Área do Funcionário</h1>
+  <p>
+    Informações claras sobre pagamentos, benefícios, ponto e atestados.
+    Se precisar, fale com o RH pelo botão no canto da tela.
+  </p>
+</section>
+
+<!-- CARDS -->
+<section class="container">
+  <div class="grid">
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c">
+      <div class="content">
+        <h3>Data de Pagamento</h3>
+        <p>
+          O pagamento é realizado até o 5º dia útil.
+          Holerites ficam disponíveis antes do depósito.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5">
+      <div class="content">
+        <h3>Atestados</h3>
+        <p>
+          Atestados devem ser enviados em até 24 horas após emissão,
+          com foto legível ou PDF.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216">
+      <div class="content">
+        <h3>Ponto</h3>
+        <p>
+          Registre corretamente entrada, saída e intervalo.
+          Ajustes devem ser solicitados no mesmo dia.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1601597111158-2fceff292cdc">
+      <div class="content">
+        <h3>Benefícios</h3>
+        <p>
+          VT, VR e demais benefícios seguem regras internas
+          e datas fixas de recarga.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1714627798569-b3e36d409c4b">
+      <div class="content">
+        <h3>Faltas e Atrasos</h3>
+        <p>
+          Faltas sem justificativa podem gerar desconto.
+          Sempre comunique o RH.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- BOT FLUTUANTE RH -->
+
+<div id="rh-bot-btn" style="
+position:fixed;
+bottom:20px;
+right:20px;
+width:60px;
+height:60px;
+border-radius:50%;
+background:#16a34a;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+cursor:pointer;
+z-index:9999;
+">💬</div>
+
+<div id="rh-bot" style="
+position:fixed;
+bottom:90px;
+right:20px;
+width:320px;
+max-height:80vh;
+background:#ffffff;
+border-radius:14px;
+box-shadow:0 10px 30px rgba(0,0,0,.2);
+display:none;
+flex-direction:column;
+overflow:hidden;
+z-index:9999;
+font-family:Arial,sans-serif;
+color:#000;
+">
+
+  <header style="
+  background:#16a34a;
+  color:#fff;
+  padding:12px;
+  font-weight:bold;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  ">
+    Atendimento RH
+    <span style="cursor:pointer;color:#fff" onclick="toggleBot()">✕</span>
+  </header>
+
+  <div id="chat" style="
+  padding:10px;
+  flex:1;
+  overflow-y:auto;
+  background:#f3f4f6;
+  color:#000;
+  "></div>
+
+  <div id="inputArea" style="
+  padding:10px;
+  border-top:1px solid #ddd;
+  background:#fff;
+  color:#000;
+  "></div>
+
+</div>
+
+<script>
+const WHATSAPP_NUMBER = "5511980495404"; // ALTERE AQUI
+
+const data = {};
+const steps = [
+ {k:"nome",q:"Qual seu nome completo?",t:"text"},
+ {k:"filial",q:"Qual sua filial?",t:"text"},
+ {k:"setor",q:"Qual seu setor?",t:"text"},
+ {k:"regiao",q:"Qual sua Zona de Trabalho?",t:"opt",o:["Sul","Norte"]},
+ {k:"turno",q:"Turno?",t:"opt",o:["Manhã","Tarde","Noite"]},
+ {k:"funcao",q:"Qual sua função?",t:"text"},
+ {k:"assunto",q:"Assunto?",t:"opt",o:["Ponto","Benefícios","Salário","Faltas","Atestados","Outros"]},
+ {k:"mensagem",q:"Descreva sua solicitação:",t:"area"}
+];
+
+let step = 0;
+
+const chat = document.getElementById("chat");
+const input = document.getElementById("inputArea");
+
+function toggleBot(){
+  const b = document.getElementById("rh-bot");
+  b.style.display = b.style.display === "flex" ? "none" : "flex";
+}
+
+document.getElementById("rh-bot-btn").onclick = toggleBot;
+
+function botMsg(t){
+  chat.innerHTML += `
+  <div style="
+    background:#e5e7eb;
+    color:#000;
+    padding:8px 10px;
+    border-radius:10px;
+    margin-bottom:8px;
+    font-size:13px;
+    max-width:85%;
+  ">${t}</div>`;
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function userMsg(t){
+  chat.innerHTML += `
+  <div style="
+    background:#dbeafe;
+    color:#000;
+    padding:8px 10px;
+    border-radius:10px;
+    margin-bottom:8px;
+    font-size:13px;
+    max-width:85%;
+    margin-left:auto;
+  ">${t}</div>`;
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function render(){
+  input.innerHTML = "";
+  const s = steps[step];
+  botMsg(s.q);
+
+  if(s.t === "text" || s.t === "area"){
+    input.innerHTML = `
+      ${s.t === "area"
+        ? "<textarea style='width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;font-size:13px;color:#000;resize:none;'></textarea>"
+        : "<input type='text' style='width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;font-size:13px;color:#000;'>"}
+      <button style="
+        width:100%;
+        padding:8px;
+        border-radius:8px;
+        font-size:13px;
+        background:#16a34a;
+        color:#fff;
+        border:none;
+        margin-top:6px;
+        cursor:pointer;
+        font-weight:bold;
+      ">Continuar</button>
+    `;
+    input.querySelector("button").onclick = () => {
+      const v = input.querySelector("input,textarea").value.trim();
+      if(!v) return;
+      data[s.k] = v;
+      userMsg(v);
+      step++;
+      next();
+    };
+  } else {
+    const div = document.createElement("div");
+    div.style.display = "flex";
+    div.style.flexWrap = "wrap";
+    div.style.gap = "6px";
+
+    s.o.forEach(o => {
+      const p = document.createElement("div");
+      p.innerText = o;
+      p.style.cssText = `
+        border:1px solid #ccc;
+        padding:6px 10px;
+        border-radius:20px;
+        cursor:pointer;
+        font-size:12px;
+        background:#fff;
+        color:#000;
+      `;
+      p.onclick = () => {
+        data[s.k] = o;
+        userMsg(o);
+        step++;
+        next();
+      };
+      div.appendChild(p);
+    });
+    input.appendChild(div);
+  }
+}
+
+function next(){
+  if(step < steps.length){
+    render();
+    return;
+  }
+
+  const msg =
+`📌 Atendimento RH
+
+Nome: ${data.nome}
+Filial: ${data.filial}
+Setor: ${data.setor}
+Região: ${data.regiao}
+Turno: ${data.turno}
+Função: ${data.funcao}
+
+Assunto: ${data.assunto}
+Mensagem: ${data.mensagem}`;
+
+  window.open(
+    `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`,
+    "_blank"
+  );
+}
+
+botMsg("Olá! Vou te ajudar a falar com o RH.");
+render();
+</script>
+
+<!-- FIM BOT -->
+
