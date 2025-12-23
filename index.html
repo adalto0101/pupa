@@ -403,8 +403,8 @@ if (window.innerWidth <= 768) {
 }
 
 /* ===== CHATBOT ===== */
-const WHATSAPP_NUMBER = "5511980495404";
-const BOT_IMG = "https://cdn-icons-png.flaticon.com/512/949/949635.png";
+const WHATSAPP_NUMBER = "5511961433314";
+const BOT_IMG = "https://cdn-icons-png.flaticon.com/512/706/706816.png";
 const USER_IMG = "https://cdn-icons-png.flaticon.com/512/1077/1077012.png";
 const data = {};
 const respostasIA = {
@@ -422,7 +422,7 @@ const respostasIA = {
 
 const steps = [
  {k:"nome",q:"Qual seu nome completo?",t:"text"},
- {k:"filial",q:"Qual sua filial?",t:"text"},
+ {k:"filial",q:"Qual sua filial?",t:"opt",o:["Matriz - Tecmar","Outra"]},
  {k:"setor",q:"Qual seu setor?",t:"text"},
  {k:"regiao",q:"Qual sua Zona de Trabalho?",t:"opt",o:["Sul","Norte"]},
  {k:"turno",q:"Turno?",t:"opt",o:["Manhã","Tarde","Noite"]},
@@ -560,3 +560,4 @@ render();
 
 </body>
 </html>
+
