@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Área do Funcionário | Pupa Terceirização</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
@@ -15,33 +14,46 @@
   --card:#ffffff0d;
   --text:#f1f5f9;
   --muted:#cbd5e1;
-  --accent:#22c55e;
 }
 
 * {box-sizing: border-box; margin: 0; padding: 0;}
-
 body {
   font-family: 'Inter', sans-serif;
   background: linear-gradient(180deg, var(--dark), var(--dark2));
   color: var(--text);
   overflow-x: hidden;
-  position: relative;
   height: 100%;
+}
+
+/* ===== PRELOADER ===== */
+#preloader {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, #0b3d23, #062614);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  opacity: 1;
+  transition: opacity 1s ease, transform 1s ease;
+}
+#preloader img {
+  width: 150px;
+  animation: pulseLogo 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(34,197,94,.4));
+}
+@keyframes pulseLogo {
+  0%,100% { transform: scale(1); opacity: .9; }
+  50% { transform: scale(1.15); opacity: 1; }
 }
 
 /* ===== BACKGROUND PARTICLES ===== */
 #particles {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   z-index: -1;
   background: radial-gradient(circle at top, rgba(22,163,74,0.15), transparent 40%);
   overflow: hidden;
 }
-
-/* Criando bolhas leves */
 .particle {
   position: absolute;
   background: rgba(34,197,94,0.25);
@@ -55,15 +67,10 @@ body {
 
 /* ===== HEADER ===== */
 header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: fixed; top: 0; left: 0; right: 0;
   background: rgba(0,0,0,0.3);
   backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: flex; justify-content: center; align-items: center;
   padding: 10px 20px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
   z-index: 1000;
@@ -74,6 +81,13 @@ header img { height: 60px; }
 .hero {
   padding: 140px 20px 80px;
   text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s ease 0.2s, transform 1s ease 0.2s;
+}
+.hero.visible {
+  opacity: 1;
+  transform: none;
 }
 .hero h1 {
   font-size: 44px;
@@ -123,33 +137,9 @@ header img { height: 60px; }
 }
 .card:hover img { transform: scale(1.05); }
 
-.card .content {
-  padding: 24px;
-}
-.card h3 {
-  margin-bottom: 10px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 20px;
-}
-.card p {
-  color: var(--muted);
-  font-size: 15px;
-}
-
-/* Efeito de brilho no hover */
-.card::after {
-  content: "";
-  position: absolute;
-  top: 0; left: -75%;
-  width: 50%; height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.15), transparent);
-  transform: skewX(-25deg);
-  transition: 0.7s;
-}
-.card:hover::after {
-  left: 125%;
-}
+.card .content { padding: 24px; }
+.card h3 { margin-bottom: 10px; color: #fff; font-weight: 600; font-size: 20px; }
+.card p { color: var(--muted); font-size: 15px; }
 
 /* ===== ANIMAÇÃO ===== */
 @keyframes fadeUp {
@@ -161,11 +151,183 @@ header img { height: 60px; }
   .hero h1 {font-size: 32px;}
   header img {height: 48px;}
 }
+
+/* ===== CHATBOT ===== */
+#rh-bot {
+  position: fixed;
+  bottom: 100px;
+  right: 25px;
+  width: 340px;
+  height: 380px; /* tamanho fixo */
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 35px rgba(0,0,0,.35);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9999;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #111;
+}
+/* ===== CHATBOT FIXO E CORRIGIDO ===== */
+#rh-bot {
+  position: fixed;
+  bottom: 100px;
+  right: 25px;
+  width: 340px;
+  height: 460px; /* altura do chat */
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 35px rgba(0,0,0,.35);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9999;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #111;
+  isolation: isolate; /* impede que estilos externos escapem */
+  position: fixed;
+}
+
+#rh-bot header {
+  position: relative; /* garante que o header fique dentro do chat */
+  background: #16a34a;
+  color: #fff;
+  padding: 12px 14px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 15px;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+#rh-bot .chat {
+  background: #f3f4f6;
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  scroll-behavior: smooth;
+}
+
+#rh-bot .input {
+  border-top: 1px solid #ddd;
+  padding: 10px;
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  background: #fff;
+  z-index: 1;
+}
+
+
+.bot, .user {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+  max-width: 90%;
+}
+.bot img, .user img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.bot div, .user div {
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.bot div { background: #e5e7eb; color: #111; }
+.user { align-self: flex-end; flex-direction: row-reverse; }
+.user div { background: #dbeafe; color: #111; }
+#rh-bot .input {
+  border-top: 1px solid #ddd;
+  padding: 10px;
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+#rh-bot input, #rh-bot textarea {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+#rh-bot button {
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+#rh-bot button:hover { background: #138a3d; }
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 6px;
+}
+.pill {
+  background: #fff;
+  color: #111;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.pill.active { background: #16a34a; color: #fff; border-color: #16a34a; }
+
+/* ===== BOTÃO FLUTUANTE ===== */
+#rh-bot-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 4px 15px rgba(0,0,0,.3);
+  transition: .3s;
+}
+#rh-bot-btn:hover { transform: scale(1.1); background: #138a3d; }
+
+@media(max-width:600px){
+  #rh-bot {
+    right: 10px;
+    width: 90%;
+    height: 320px;
+  }
+}
 </style>
 </head>
 
 <body>
 
+<!-- PRELOADER -->
+<div id="preloader">
+  <img src="https://pupaterceirizacao.com.br/wp-content/uploads/2023/09/pupabranco.png#186" alt="Carregando...">
+</div>
+
+<!-- PARTICULAS -->
 <div id="particles"></div>
 
 <header>
@@ -173,7 +335,7 @@ header img { height: 60px; }
 </header>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero" id="hero">
   <h1>Área do Funcionário</h1>
   <p>Informações claras sobre pagamentos, benefícios, ponto e atestados. Se precisar, fale com o RH pelo botão no canto da tela.</p>
 </section>
@@ -189,8 +351,26 @@ header img { height: 60px; }
   </div>
 </section>
 
+<!-- BOT FLUTUANTE RH -->
+<div id="rh-bot-btn">💬</div>
+<div id="rh-bot">
+  <header>Atendimento RH <span style="cursor:pointer" onclick="toggleBot()">✕</span></header>
+  <div id="chat" class="chat"></div>
+  <div class="input" id="inputArea"></div>
+</div>
+
 <script>
-// Gerar partículas aleatórias
+/* ===== PRELOADER ===== */
+window.addEventListener('load', () => {
+  const pre = document.getElementById('preloader');
+  const hero = document.getElementById('hero');
+  pre.style.opacity = '0';
+  pre.style.transform = 'scale(0.95)';
+  setTimeout(() => pre.remove(), 900);
+  setTimeout(() => hero.classList.add('visible'), 500);
+});
+
+/* ===== PARTICULAS ===== */
 const container = document.getElementById('particles');
 for (let i = 0; i < 20; i++) {
   const p = document.createElement('div');
@@ -203,82 +383,43 @@ for (let i = 0; i < 20; i++) {
   p.style.animationDelay = `${Math.random() * 5}s`;
   container.appendChild(p);
 }
-</script>
 
-</body>
-</html>
+/* ===== ANIMAÇÃO MOBILE ===== */
+if (window.innerWidth <= 768) {
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(50px)';
+  });
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animation = 'fadeUp .8s ease forwards';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  cards.forEach(card => observer.observe(card));
+}
 
-<!-- BOT FLUTUANTE RH -->
-<style>
-#rh-bot-btn{
-  position:fixed;bottom:20px;right:20px;
-  width:60px;height:60px;border-radius:50%;
-  background:#16a34a;color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  font-size:28px;cursor:pointer;z-index:9999;
-}
-#rh-bot{
-  position:fixed;bottom:90px;right:20px;
-  width:320px;max-height:80vh;
-  background:#fff;border-radius:14px;
-  box-shadow:0 10px 30px rgba(0,0,0,.2);
-  display:none;flex-direction:column;
-  overflow:hidden;z-index:9999;
-  font-family:Arial,sans-serif;
-}
-#rh-bot header{
-  background:#16a34a;color:#fff;
-  padding:12px;font-weight:bold;
-  display:flex;justify-content:space-between;
-}
-#rh-bot .chat{
-  padding:10px;flex:1;overflow-y:auto;
-  background:#f3f4f6;
-}
-.bot,.user{
-  padding:8px 10px;border-radius:10px;
-  margin-bottom:8px;font-size:13px;
-  max-width:85%;
-}
-.bot{background:#e5e7eb;}
-.user{background:#dbeafe;margin-left:auto;}
-#rh-bot .input{
-  padding:10px;border-top:1px solid #ddd;
-}
-#rh-bot input, #rh-bot textarea, #rh-bot button{
-  width:100%;padding:8px;
-  border-radius:8px;border:1px solid #ccc;
-  font-size:13px;
-}
-#rh-bot button{
-  background:#16a34a;color:#fff;
-  border:none;margin-top:6px;
-  cursor:pointer;font-weight:bold;
-}
-.pills{display:flex;flex-wrap:wrap;gap:6px;}
-.pill{
-  border:1px solid #ccc;padding:6px 10px;
-  border-radius:20px;cursor:pointer;
-  font-size:12px;background:#fff;
-}
-.pill.active{border-color:#16a34a;}
-</style>
-
-<div id="rh-bot-btn">💬</div>
-
-<div id="rh-bot">
-  <header>
-    Atendimento RH
-    <span style="cursor:pointer" onclick="toggleBot()">✕</span>
-  </header>
-  <div id="chat" class="chat"></div>
-  <div class="input" id="inputArea"></div>
-</div>
-
-<script>
-const WHATSAPP_NUMBER = "5511976539402"; // ALTERE AQUI
-
+/* ===== CHATBOT ===== */
+const WHATSAPP_NUMBER = "5511980495404";
+const BOT_IMG = "https://cdn-icons-png.flaticon.com/512/949/949635.png";
+const USER_IMG = "https://cdn-icons-png.flaticon.com/512/1077/1077012.png";
 const data = {};
+const respostasIA = {
+  "Salário":
+    "O pagamento é realizado até o 5º dia útil do mês seguinte. A folha é fechada no dia 20, e faltas injustificadas nesse período podem gerar descontos. Deseja abrir um chamado mesmo assim?",
+  "Ponto":
+    "Preencha sempre sua folha de ponto com atenção e de forma legível. Caso perceba algum erro, comunique o RH no mesmo dia. Deseja abrir um chamado sobre ponto?",
+  "Benefícios":
+    "Os benefícios (VR e VA) seguem o mesmo período da folha: faltas injustificadas podem impactar no valor. As recargas são feitas conforme o cronograma da empresa. Deseja abrir um chamado sobre benefícios?",
+  "Atestados":
+    "Atestados devem ser enviados até 24 horas após emissão, com foto legível ou PDF. Eles servem para justificar faltas e evitar descontos. Deseja abrir um chamado sobre atestados?",
+  "Faltas":
+    "Faltas sem justificativa dentro do período de fechamento (até o dia 20) podem gerar desconto proporcional. Deseja abrir um chamado para tratar sobre faltas?"
+};
+
 const steps = [
  {k:"nome",q:"Qual seu nome completo?",t:"text"},
  {k:"filial",q:"Qual sua filial?",t:"text"},
@@ -289,75 +430,133 @@ const steps = [
  {k:"assunto",q:"Assunto?",t:"opt",o:["Ponto","Benefícios","Salário","Faltas","Atestados","Outros"]},
  {k:"mensagem",q:"Descreva sua solicitação:",t:"area"}
 ];
-let step=0;
-
+let step=0; let contador=1;
 const chat=document.getElementById("chat");
 const input=document.getElementById("inputArea");
+
+function gerarTicket(){
+  const d=new Date();
+  const dia=String(d.getDate()).padStart(2,'0');
+  const mes=String(d.getMonth()+1).padStart(2,'0');
+  const seq=String(contador++).padStart(2,'0');
+  return `#${dia}${mes}${seq}`;
+}
 
 function toggleBot(){
   const b=document.getElementById("rh-bot");
   b.style.display=b.style.display==="flex"?"none":"flex";
 }
-
 document.getElementById("rh-bot-btn").onclick=toggleBot;
 
-function botMsg(t){
-  chat.innerHTML+=`<div class="bot">${t}</div>`;
-  chat.scrollTop=chat.scrollHeight;
+function botMsg(t) {
+  chat.insertAdjacentHTML("beforeend", `<div class="bot"><img src="${BOT_IMG}"><div>${t}</div></div>`);
+  setTimeout(() => {
+    chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
+  }, 100);
 }
-function userMsg(t){
-  chat.innerHTML+=`<div class="user">${t}</div>`;
-  chat.scrollTop=chat.scrollHeight;
+
+function userMsg(t) {
+  chat.insertAdjacentHTML("beforeend", `<div class="user"><div>${t}</div><img src="${USER_IMG}"></div>`);
+  setTimeout(() => {
+    chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
+  }, 100);
 }
+
 
 function render(){
-  input.innerHTML="";
-  const s=steps[step];
-  botMsg(s.q);
+ input.innerHTML="";
+ const s=steps[step];
+ botMsg(s.q);
 
-  if(s.t==="text"||s.t==="area"){
-    input.innerHTML=`
-      ${s.t==="area"?"<textarea></textarea>":"<input type='text'>"}
-      <button>Continuar</button>`;
-    input.querySelector("button").onclick=()=>{
-      const v=input.querySelector("input,textarea").value.trim();
-      if(!v)return;
-      data[s.k]=v; userMsg(v); step++; next();
+ if(s.t==="text"||s.t==="area"){
+  input.innerHTML=`${s.t==="area"?"<textarea></textarea>":"<input type='text'>"}<button>➤</button>`;
+  const btn=input.querySelector("button");
+  btn.onclick=()=>{
+    const v=input.querySelector("input,textarea").value.trim();
+    if(!v)return;
+    data[s.k]=v; 
+    userMsg(v); 
+    step++; 
+    next();
+  };
+ } else {
+  const div=document.createElement("div");
+  div.className="pills";
+  s.o.forEach(o=>{
+    const p=document.createElement("div");
+    p.className="pill"; 
+    p.innerText=o;
+    p.onclick=()=>{
+      data[s.k]=o; 
+      userMsg(o);
+      // Se o assunto tiver resposta automática da IA
+      if(s.k==="assunto" && respostasIA[o]){
+        botMsg(respostasIA[o]);
+        input.innerHTML = `
+          <div class='pills'>
+            <div class='pill'>Sim</div>
+            <div class='pill'>Não</div>
+          </div>`;
+        input.querySelectorAll(".pill").forEach(pill=>{
+          pill.onclick=()=>{
+            userMsg(pill.innerText);
+            if(pill.innerText==="Sim"){ 
+              step++; 
+              next(); 
+            } else {
+              botMsg("Tudo bem! Ficamos felizes em ajudar. 😊");
+            }
+          };
+        });
+      } else {
+        step++; 
+        next();
+      }
     };
-  }else{
-    const div=document.createElement("div");
-    div.className="pills";
-    s.o.forEach(o=>{
-      const p=document.createElement("div");
-      p.className="pill"; p.innerText=o;
-      p.onclick=()=>{
-        data[s.k]=o; userMsg(o); step++; next();
-      };
-      div.appendChild(p);
-    });
-    input.appendChild(div);
-  }
+    div.appendChild(p);
+  });
+  input.appendChild(div);
+ }
 }
 
 function next(){
-  if(step<steps.length){render();return;}
-  const msg=
-`📌 Atendimento RH
+  if(step < steps.length){ 
+    render(); 
+    return; 
+  }
 
-Nome: ${data.nome}
-Filial: ${data.filial}
-Setor: ${data.setor}
-Região: ${data.regiao}
-Turno: ${data.turno}
-Função: ${data.funcao}
+  const ticket = gerarTicket();
 
-Assunto: ${data.assunto}
-Mensagem: ${data.mensagem}`;
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`,"_blank");
+  // Monta a mensagem de forma legível e sem o símbolo "#"
+  const msg = 
+  `📍Ticket Nº ${ticket}\n\n` +
+  `👨‍🏭Nome: ${data.nome}\n` +
+  `🏢Filial: ${data.filial}\n` +
+  `📦Setor: ${data.setor}\n` +
+  `🚩Região: ${data.regiao}\n` +
+  `🕐Turno: ${data.turno}\n` +
+  `🥾Função: ${data.funcao}\n\n` +
+  `💬Assunto: ${data.assunto}\n` +
+  `Mensagem: ${data.mensagem}`;
+
+  // Codifica tudo corretamente para o WhatsApp
+  const msgEncoded = encodeURIComponent(msg);
+
+  // Monta o link do WhatsApp (sem fragmentos)
+  const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${msgEncoded}`;
+
+  // Abre o WhatsApp
+  window.open(url, "_blank");
+
+  // Confirmação visual no chat
+  botMsg(`✅ Seu chamado foi registrado com o número <b>Nº ${ticket}</b> e enviado ao RH. Você receberá retorno em até 24h úteis.`);
 }
+
+
 
 botMsg("Olá! Vou te ajudar a falar com o RH.");
 render();
 </script>
-<!-- FIM BOT -->
 
+</body>
+</html>
