@@ -7,6 +7,69 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
+
+/* Estilo da célula de mensagem */
+.coluna-mensagem {
+    max-width: 250px;
+    text-align: left;
+    vertical-align: top;
+    padding: 10px !important;
+}
+
+/* Container do texto com limite de altura */
+.texto-limitado {
+    max-height: 60px; /* Altura de umas 3 linhas */
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.4s ease;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Quando expandido */
+.texto-limitado.expandido {
+    max-height: 1000px; /* Altura suficiente para textos grandes */
+}
+
+/* O link "Ler mais" */
+.btn-ler-mais {
+    color: #16a34a;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+    display: block;
+    margin-top: 5px;
+    text-decoration: underline;
+}
+
+/* Efeito de saída para exclusão */
+.fade-excluir {
+  transition: all 0.5s ease;
+  opacity: 0 !important;
+  transform: translateX(-50px); /* Desliza para a esquerda */
+  background-color: #fee2e2 !important; /* Fundo vermelho claro no adeus */
+}
+
+/* Animação de pulsação do logo */
+@keyframes pulsar {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+#logoPulsante {
+    animation: pulsar 1.5s infinite ease-in-out;
+}
+
+/* Transição de sumiço do preloader */
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    pointer-events: none;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background: #f1f5f9;
@@ -20,7 +83,28 @@ body {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(180deg, #0b3d23, #062614);
+  background-color: #062614; /* Cor de fundo base */
+  background-image: radial-gradient(circle, #0b3d23, #062614);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* Camada vermelha invisível que vai suavizar o erro */
+#login::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(circle, #450a0a, #1a0505);
+  opacity: 0; /* Começa invisível */
+  transition: opacity 0.8s ease; /* Aqui a transição funciona! */
+  z-index: -1; /* Fica atrás das partículas e do login */
+}
+
+/* Classe que ativa o fundo vermelho */
+#login.erro-bg::before {
+  opacity: 1;
 }
 .login-box {
   background: #fff;
@@ -57,8 +141,71 @@ body {
   background: #138a3d;
 }
 
+.search-container {
+    width: 100%;
+    max-width: 600px; /* Largura máxima em telas grandes */
+    margin: 0 auto 20px 0; /* Alinhado à esquerda com margem embaixo */
+    padding: 0 10px; /* Respiro nas laterais em telas pequenas */
+    box-sizing: border-box;
+}
+
+#inputBusca {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 16px; /* 16px evita o zoom automático indesejado no iPhone */
+    outline: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#inputBusca:focus {
+    border-color: #16a34a;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+}
+
+/* Ajuste específico para Celular */
+@media (max-width: 600px) {
+    .search-container {
+        max-width: 100%;
+        margin-bottom: 15px;
+    }
+    
+    #inputBusca {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
+
 /* ===== PAINEL ===== */
 #painel { display: none; padding: 20px; }
+
+/* Ajuste para a tabela não quebrar em telas pequenas */
+#painel {
+  overflow-x: auto; /* Permite scroll lateral no celular */
+}
+
+table {
+  min-width: 900px; /* Garante que as colunas tenham espaço para respirar */
+}
+
+/* Modal de Confirmação Personalizado */
+#modalConfirmacao {
+    display: none;
+    position: fixed; /* Fixa em relação à tela (viewport) */
+    top: 0;
+    left: 0;
+    width: 100vw; /* Ocupa a largura total da tela do celular */
+    height: 100vh;
+    background: rgba(0,0,0,0.6);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
 header {
   display: flex;
   justify-content: space-between;
@@ -101,6 +248,28 @@ header button:hover { background: #e5e7eb; }
   color: #fff;
 }
 
+/* Isso impede que a página inteira balance pro lado */
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* Isso cria a "janela" de rolagem apenas para a tabela */
+.tabela-responsiva {
+    width: 100%;
+    overflow-x: auto; /* Permite rolagem lateral só aqui */
+    -webkit-overflow-scrolling: touch; /* Suaviza a rolagem no iPhone */
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.1);
+    margin-bottom: 20px;
+}
+
+/* Garante que a tabela mantenha o tamanho dos dados sem espremer */
+.tabela-responsiva table {
+    min-width: 1000px; /* Altere esse valor se tiver muitas colunas */
+    margin-bottom: 0; /* Remove margem interna */
+}
 /* ===== TABELAS ===== */
 table {
   width: 100%;
@@ -158,12 +327,20 @@ button.arquivar:hover { transform: scale(1.2); }
 </head>
 <body>
 
+<div id="preloader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#062614; z-index:20000; align-items:center; justify-content:center; flex-direction:column;">
+    <img src="https://pupaterceirizacao.com.br/wp-content/uploads/2023/09/pupabranco.png" alt="Logo Pupa" id="logoPulsante" style="width:200px; height:auto;">
+    
+</div>
+
 <!-- LOGIN -->
-<div id="login">
-  <div class="login-box">
+<div id="login" style="display: flex; align-items: center; justify-content: center; height: 100vh; background: radial-gradient(circle, #0b3d23, #062614); overflow: hidden; position: relative;">
+  
+  <canvas id="canvas-bg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></canvas>
+
+  <div class="login-box" style="position: relative; z-index: 2; background: #fff; padding: 30px 40px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,.3); text-align: center; width: 300px;">
     <h2>Login RH</h2>
-    <input type="password" id="senha" placeholder="Digite a senha">
-    <button onclick="login()">Entrar</button>
+    <input type="password" id="senha" placeholder="Digite a senha" style="width: 100%; padding: 10px; margin-top: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 15px; box-sizing: border-box;">
+    <button onclick="login()" style="margin-top: 20px; background: #16a34a; border: none; padding: 10px 20px; color: #fff; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%;">Entrar</button>
     <p id="erro" style="color:red;display:none;margin-top:10px;">Senha incorreta</p>
   </div>
 </div>
@@ -175,44 +352,160 @@ button.arquivar:hover { transform: scale(1.2); }
     <button onclick="logout()">Sair</button>
   </header>
 
+  <div class="search-container">
+  <input type="text" id="inputBusca" onkeyup="filtrarTabela()" placeholder="🔍 Buscar por nome, ticket ou setor...">
+  </div>
+
   <div class="tabs">
     <div class="tab active" onclick="mudarAba('ativos')">Chamados Ativos</div>
     <div class="tab" onclick="mudarAba('arquivados')">Arquivados</div>
   </div>
-
-  <table id="tabela">
-    <thead>
-      <tr>
-        <th>Ticket</th>
-        <th>Nome</th>
-        <th>Filial</th>
-        <th>Setor</th>
-        <th>Assunto</th>
-        <th>Mensagem</th>
-        <th>Status</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <div class="tabela-responsiva">
+      <table id="tabela">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Ticket</th>
+            <th>Nome</th>
+            <th>Filial</th>
+            <th>Setor</th>
+            <th>Assunto</th>
+            <th>Mensagem</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 </div>
 
 <!-- POPUP -->
 <div id="popup">🔔 Novo chamado recebido!</div>
 
+<div id="modalConfirmacao">
+  <div style="background:#fff; padding:25px; border-radius:15px; width:90%; max-width:400px; text-align:center;">
+    <div style="font-size: 50px;">⚠️</div>
+    <h3 style="margin-top:10px;">Arquivar Chamado?</h3>
+    <p style="color:#666; font-size:14px;">Mover para arquivados? <strong>Esta ação não pode ser desfeita.</strong></p>
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button onclick="fecharModal()" style="flex:1; padding:12px; border:none; border-radius:8px; background:#e5e7eb; cursor:pointer;">Cancelar</button>
+      <button id="confirmarBtn" style="flex:1; padding:12px; border:none; border-radius:8px; background:#ef4444; color:#fff; cursor:pointer; font-weight:bold;">Arquivar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalExcluir" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10001; align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:25px; border-radius:15px; width:90%; max-width:400px; text-align:center;">
+    <div style="font-size: 50px;">🚫</div>
+    <h3 style="margin-top:10px; color:#b91c1c;">Excluir Permanentemente?</h3>
+    <p style="color:#666; font-size:14px;">Você está prestes a apagar este registro do banco de dados. <b>Esta ação é definitiva!</b></p>
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button onclick="fecharModalExcluir()" style="flex:1; padding:12px; border:none; border-radius:8px; background:#e5e7eb; cursor:pointer;">Cancelar</button>
+      <button id="confirmarExclusaoBtn" style="flex:1; padding:12px; border:none; border-radius:8px; background:#b91c1c; color:#fff; cursor:pointer; font-weight:bold;">Excluir Agora</button>
+    </div>
+  </div>
+</div>
+
+<!-- 🔥 Firebase Integration - Inserir acima do script principal -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getDatabase, ref, onValue, update, remove, set, get } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
+
+  // Configuração Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyDK9pXOo0-brSHXQe9TMANhTYECp55mWVM",
+    authDomain: "pupa-57c84.firebaseapp.com",
+    databaseURL: "https://pupa-57c84-default-rtdb.firebaseio.com",
+    projectId: "pupa-57c84",
+    storageBucket: "pupa-57c84.firebasestorage.app",
+    messagingSenderId: "159582700348",
+    appId: "1:159582700348:web:38e894ba4d0b98c48e1439",
+    measurementId: "G-616G7GCMGE"
+  };
+
+  // Inicializa Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Disponibiliza globalmente
+  window.db = db;
+  window.firebaseRef = ref;
+  window.firebaseOnValue = onValue;
+  window.firebaseUpdate = update;
+  window.firebaseRemove = remove;
+  window.firebaseSet = set;
+  window.firebaseGet = get;
+</script>
+
+
 <script>
-// ===== LOGIN =====
-const senhaCorreta = "rh2025";
-function login(){
-  const s = document.getElementById("senha").value;
-  if(s === senhaCorreta){
-    document.getElementById("login").style.display="none";
-    document.getElementById("painel").style.display="block";
-    carregarChamados();
-  } else {
-    document.getElementById("erro").style.display="block";
+
+// ===== LOGIN PERSISTENTE POR 4H =====
+const LOGIN_KEY = "painelRHLogin";
+const LOGIN_TIME = 4 * 60 * 60 * 1000; // 4 horas
+const loginBox = document.getElementById("login");
+const painel = document.getElementById("painel");
+
+function checkLogin() {
+  const saved = localStorage.getItem(LOGIN_KEY);
+  if (saved) {
+    const data = JSON.parse(saved);
+    if (Date.now() - data.time < LOGIN_TIME) {
+      loginBox.style.display = "none";
+      painel.style.display = "block";
+      carregarChamados();
+      return true;
+    } else {
+      localStorage.removeItem(LOGIN_KEY);
+    }
   }
+  return false;
 }
+
+function login() {
+    const senha = document.getElementById("senha").value.trim();
+    const erro = document.getElementById("erro");
+    const preloader = document.getElementById("preloader");
+    const loginDiv = document.getElementById("login");
+    const painelDiv = document.getElementById("painel");
+
+    if (senha === "rh2025") {
+        // 1. Esconde erro se houver e limpa campos
+        erro.style.display = "none";
+        
+        // 2. Mostra o Preloader
+        preloader.style.display = "flex";
+
+        // 3. Aguarda um tempo (ex: 2.5 segundos) para simular o carregamento
+        setTimeout(() => {
+            // Salva o login
+            localStorage.setItem(LOGIN_KEY, JSON.stringify({ time: Date.now() }));
+            
+            // Troca as telas por baixo do preloader
+            loginDiv.style.display = "none";
+            painelDiv.style.display = "block";
+            carregarChamados();
+
+            // 4. Efeito de fade-out no preloader
+            preloader.classList.add("fade-out");
+            
+            // 5. Remove o preloader do DOM após a transição terminar
+            setTimeout(() => {
+                preloader.style.display = "none";
+                preloader.classList.remove("fade-out");
+            }, 800);
+
+        }, 2500); // Tempo do logo pulsando
+
+    } else {
+        erro.style.display = "block";
+        if (window.animarErro) window.animarErro();
+    }
+}
+
+window.addEventListener("load", checkLogin);
+
 function logout(){
   document.getElementById("painel").style.display="none";
   document.getElementById("login").style.display="flex";
@@ -227,74 +520,223 @@ if(!localStorage.getItem("arquivados"))
 
 let abaAtual = "ativos";
 
-function mudarAba(aba){
-  abaAtual = aba;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelector(`.tab:nth-child(${aba === 'ativos' ? 1 : 2})`).classList.add('active');
-  carregarChamados();
+function formatarData(dataRaw) {
+    if (!dataRaw) return "--/--";
+    const d = new Date(dataRaw);
+    if (isNaN(d.getTime())) return dataRaw; 
+    return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 }
 
-function carregarChamados(){
-  const dados = JSON.parse(localStorage.getItem(abaAtual === "ativos" ? "chamados" : "arquivados"));
+function mudarAba(aba) {
+  document.getElementById("inputBusca").value = "";
+  abaAtual = aba;
+
+  // 1. Seleciona todos os elementos com a classe 'tab'
+  const abas = document.querySelectorAll('.tab');
+  
+  // 2. Remove a classe 'active' de todas
+  abas.forEach(tab => tab.classList.remove('active'));
+
+  // 3. Adiciona a classe 'active' na aba clicada baseado no texto
+  abas.forEach(tab => {
+    if (aba === 'ativos' && tab.innerText.includes('Ativos')) {
+      tab.classList.add('active');
+    } else if (aba === 'arquivados' && tab.innerText.includes('Arquivados')) {
+      tab.classList.add('active');
+    }
+  });
+
+  // 4. Limpa a tabela e carrega os novos dados
   const tbody = document.querySelector("#tabela tbody");
   tbody.innerHTML = "";
 
-  if(dados.length === 0){
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#666;">Nenhum chamado ${abaAtual === 'ativos' ? 'ativo' : 'arquivado'}.</td></tr>`;
-    return;
+  if (aba === "arquivados") {
+    carregarArquivados();
+  } else {
+    carregarChamados();
+  }
+}
+
+
+// ===== LEITURA EM TEMPO REAL =====
+let chamadosAntigos = {};
+
+function carregarChamados() {
+    const tbody = document.querySelector("#tabela tbody");
+    firebaseOnValue(firebaseRef(db, 'chamados/'), (snapshot) => {
+        const data = snapshot.val() || {};
+        tbody.innerHTML = "";
+
+        // Converte o objeto em array e inverte a ordem (mais novos no topo)
+        const listaInvertida = Object.entries(data).reverse();
+
+        listaInvertida.forEach(([id, c]) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td style="font-size: 12px; font-weight:600;">${formatarData(c.data)}</td>
+                <td>${c.ticket}</td>
+                <td>${c.nome}</td>
+                <td>${c.filial}</td>
+                <td>${c.setor}</td>
+                <td>${c.assunto}</td>
+                <td class="coluna-mensagem">
+    <div class="texto-limitado" id="msg-${id}">
+        ${c.mensagem}
+    </div>
+    ${c.mensagem.length > 80 ? `<span class="btn-ler-mais" onclick="toggleMensagem('${id}', this)">Ler mais</span>` : ''}
+</td>
+                <td>
+                    <select onchange="atualizarStatus('${id}', this.value)">
+                        <option ${c.status === "Aguardando" ? "selected" : ""}>Aguardando</option>
+                        <option ${c.status === "Em tratamento" ? "selected" : ""}>Em tratamento</option>
+                        <option ${c.status === "Aguardando devolutiva" ? "selected" : ""}>Aguardando devolutiva</option>
+                        <option ${c.status === "Finalizado" ? "selected" : ""}>Finalizado</option>
+                    </select>
+                </td>
+                <td><button onclick="arquivarChamado('${id}')">📦</button></td>`;
+            tbody.appendChild(tr);
+        });
+        chamadosAntigos = data;
+    });
+}
+
+function atualizarStatus(id, novoStatus) {
+  const chamadoRef = firebaseRef(db, `chamados/${id}`);
+  const btn = document.querySelector(`button[onclick="arquivarChamado('${id}')"]`);
+  const tr = btn ? btn.closest("tr") : null;
+
+  firebaseUpdate(chamadoRef, { status: novoStatus })
+    .then(() => {
+      mostrarPopup(`✅ Status atualizado para "${novoStatus}"`);
+
+      // 🔹 Se o chamado for finalizado, destaca visualmente
+      if (novoStatus === "Finalizado" && tr) {
+        tr.style.transition = "all 0.5s ease";
+        tr.style.backgroundColor = "#16a34a55"; // leve verde de confirmação
+        tr.style.transform = "scale(1.02)";
+        setTimeout(() => {
+          tr.style.backgroundColor = "";
+          tr.style.transform = "";
+        }, 800);
+      }
+    })
+    .catch(() => {
+      mostrarPopup("❌ Erro ao atualizar o status!");
+    });
+}
+
+
+
+let idAguardandoArquivamento = null; // Variável global para controle
+
+// 1. Abre o modal e guarda o ID
+function arquivarChamado(id) {
+  // 1. Localiza a linha do chamado
+  const btn = document.querySelector(`button[onclick="arquivarChamado('${id}')"]`);
+  const tr = btn ? btn.closest("tr") : null;
+  
+  if (tr) {
+    // 2. Busca o valor do select de status dentro dessa linha específica
+    const selectStatus = tr.querySelector('select');
+    const statusAtual = selectStatus ? selectStatus.value : "";
+
+    // 3. Validação: Só permite se for "Finalizado"
+    if (statusAtual !== "Finalizado") {
+      mostrarPopup("⚠️ O chamado precisa estar 'Finalizado' para ser arquivado!");
+      
+      // Efeito visual de erro no select para chamar atenção
+      if (selectStatus) {
+        selectStatus.style.border = "2px solid #ef4444";
+        setTimeout(() => { selectStatus.style.border = "1px solid #ccc"; }, 2000);
+      }
+      return; // Interrompe a função aqui
+    }
   }
 
-  dados.forEach((c, i)=>{
-    const tr = document.createElement("tr");
+  // 4. Se passou na validação, abre o modal de confirmação
+  idAguardandoArquivamento = id;
+  document.getElementById("modalConfirmacao").style.display = "flex";
+}
+
+// 2. Fecha o modal e limpa o ID
+function fecharModal() {
+  document.getElementById("modalConfirmacao").style.display = "none";
+  idAguardandoArquivamento = null;
+}
+
+// 3. Executa a ação real (Chame isso no clique do botão 'Arquivar' do modal)
+document.getElementById("confirmarBtn").onclick = function() {
+  if (!idAguardandoArquivamento) return;
+  
+  const id = idAguardandoArquivamento;
+  const btn = document.querySelector(`button[onclick="arquivarChamado('${id}')"]`);
+  const tr = btn ? btn.closest("tr") : null;
+
+  if (tr) {
     tr.style.transition = "all 0.4s ease";
-    tr.innerHTML = `
-      <td>${c.ticket}</td>
-      <td>${c.nome}</td>
-      <td>${c.filial}</td>
-      <td>${c.setor}</td>
-      <td>${c.assunto}</td>
-      <td>${c.mensagem}</td>
-      <td>
-        ${abaAtual === "ativos" ? `
-          <select onchange="atualizarStatus(${i}, this.value)">
-            <option ${c.status==="Aguardando"?"selected":""}>Aguardando</option>
-            <option ${c.status==="Em tratamento"?"selected":""}>Em tratamento</option>
-            <option ${c.status==="Aguardando devolutiva"?"selected":""}>Aguardando devolutiva</option>
-            <option ${c.status==="Finalizado"?"selected":""}>Finalizado</option>
-          </select>` : c.status}
-      </td>
-      <td>
-        ${abaAtual === "ativos" ? `<button class="arquivar" title="Arquivar chamado" onclick="arquivarChamado(${i}, this)">📦</button>` : ""}
-      </td>`;
-    tbody.appendChild(tr);
+    tr.style.opacity = "0";
+    tr.style.transform = "translateX(40px)";
+  }
+
+  const chamadoRef = firebaseRef(db, `chamados/${id}`);
+
+  firebaseGet(chamadoRef).then((snap) => {
+    if (!snap.exists()) return;
+    const chamado = snap.val();
+
+    setTimeout(() => {
+      firebaseSet(firebaseRef(db, `arquivados/${id}`), chamado)
+        .then(() => firebaseRemove(chamadoRef))
+        .then(() => {
+          mostrarPopup(`📦 Chamado arquivado com sucesso!`);
+          fecharModal();
+          setTimeout(carregarChamados, 500);
+        });
+    }, 350);
   });
+};
+
+
+function carregarArquivados() {
+    const tbody = document.querySelector("#tabela tbody");
+    firebaseOnValue(firebaseRef(db, 'arquivados/'), (snapshot) => {
+        const data = snapshot.val() || {};
+        tbody.innerHTML = "";
+        
+        if (Object.keys(data).length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#666;">Nenhum chamado arquivado.</td></tr>`;
+            return;
+        }
+
+        const listaInvertida = Object.entries(data).reverse();
+
+        listaInvertida.forEach(([id, c]) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td style="font-size: 12px; color:#666;">${formatarData(c.data)}</td>
+                <td>${c.ticket}</td>
+                <td>${c.nome}</td>
+                <td>${c.filial}</td>
+                <td>${c.setor}</td>
+                <td>${c.assunto}</td>
+                <td class="coluna-mensagem">
+    <div class="texto-limitado" id="msg-${id}">
+        ${c.mensagem}
+    </div>
+    ${c.mensagem.length > 80 ? `<span class="btn-ler-mais" onclick="toggleMensagem('${id}', this)">Ler mais</span>` : ''}
+</td>
+                <td>${c.status}</td>
+                <td>
+                    <button onclick="prepararExclusao('${id}')" style="border:none; background:none; cursor:pointer; font-size:18px;">🗑️</button>
+                </td>`;
+            tbody.appendChild(tr);
+        });
+    });
 }
 
-function atualizarStatus(index, valor){
-  const dados = JSON.parse(localStorage.getItem("chamados"));
-  dados[index].status = valor;
-  localStorage.setItem("chamados", JSON.stringify(dados));
-  carregarChamados();
-}
 
-/* ===== ANIMAÇÃO + ALERTA DE ARQUIVAR ===== */
-function arquivarChamado(index, btn){
-  const tr = btn.closest("tr");
-  tr.style.opacity = "0";
-  tr.style.transform = "translateX(40px)";
 
-  setTimeout(()=>{
-    const chamados = JSON.parse(localStorage.getItem("chamados"));
-    const arquivados = JSON.parse(localStorage.getItem("arquivados"));
-    const movido = chamados.splice(index, 1)[0];
-    movido.status = "Arquivado";
-    arquivados.push(movido);
-    localStorage.setItem("chamados", JSON.stringify(chamados));
-    localStorage.setItem("arquivados", JSON.stringify(arquivados));
-    carregarChamados();
-    mostrarPopup("✅ Chamado arquivado com sucesso!");
-  }, 350);
-}
+
 
 /* ===== POPUP GERAL ===== */
 function mostrarPopup(texto="🔔 Novo chamado recebido!"){
@@ -319,6 +761,201 @@ setInterval(()=>{
   }
   window.lastCount = novos.length;
 }, 5000);
+</script>
+
+<script>
+(function() {
+  const canvas = document.getElementById('canvas-bg');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let colorParticles = 'rgba(22, 163, 74, 0.6)'; // Verde original
+  let colorLines = 'rgba(22, 163, 74, ';
+  const mouse = { x: null, y: null, radius: 120 };
+
+window.animarErro = function() {
+    const loginDiv = document.getElementById('login');
+
+    // 1. Ativa o vermelho (Bolinhas e Classe de Fundo)
+    colorParticles = 'rgba(239, 68, 68, 0.8)'; 
+    colorLines = 'rgba(239, 68, 68, ';
+    loginDiv.classList.add('erro-bg'); // Liga o fundo vermelho suavemente
+
+    // 2. Volta ao normal após 2 segundos
+    setTimeout(() => {
+      colorParticles = 'rgba(22, 163, 74, 0.6)'; 
+      colorLines = 'rgba(22, 163, 74, ';
+      loginDiv.classList.remove('erro-bg'); // Desliga o fundo vermelho suavemente
+    }, 2000);
+  };
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    init();
+  }
+
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2 + 0.5;
+      this.speedX = Math.random() * 0.8 - 0.4;
+      this.speedY = Math.random() * 0.8 - 0.4;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+      if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+
+      const dx = mouse.x - this.x;
+      const dy = mouse.y - this.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < mouse.radius) {
+        if (mouse.x < this.x && this.x < canvas.width - 10) this.x += 2;
+        if (mouse.x > this.x && this.x > 10) this.x -= 2;
+        if (mouse.y < this.y && this.y < canvas.height - 10) this.y += 2;
+        if (mouse.y > this.y && this.y > 10) this.y -= 2;
+      }
+    }
+    draw() {
+      ctx.fillStyle = colorParticles;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function init() {
+    particles = [];
+    const quantity = (canvas.width * canvas.height) / 10000;
+    for (let i = 0; i < quantity; i++) { particles.push(new Particle()); }
+  }
+
+  function connect() {
+    for (let a = 0; a < particles.length; a++) {
+      for (let b = a; b < particles.length; b++) {
+        const dx = particles[a].x - particles[b].x;
+        const dy = particles[a].y - particles[b].y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < 120) {
+          ctx.strokeStyle = colorLines + (1 - distance / 120) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(particles[a].x, particles[a].y);
+          ctx.lineTo(particles[b].x, particles[b].y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+function formatarData(dataRaw) {
+  if (!dataRaw) return "--/--";
+  // Tenta converter para objeto Date caso não esteja formatado
+  const d = new Date(dataRaw);
+  if (isNaN(d.getTime())) return dataRaw; // Se já for texto (ex: 24/12/2025), retorna o texto
+  
+  return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+window.toggleMensagem = function(id, btn) {
+    const div = document.getElementById(`msg-${id}`);
+    if (div.classList.contains('expandido')) {
+        div.classList.remove('expandido');
+        btn.innerText = 'Ler mais';
+    } else {
+        div.classList.add('expandido');
+        btn.innerText = 'Recolher';
+    }
+};
+
+window.filtrarTabela = function() {
+  const filtro = document.getElementById("inputBusca").value.toLowerCase();
+  const tbody = document.querySelector("#tabela tbody");
+  const linhas = tbody.getElementsByTagName("tr");
+
+  // Se a tabela estiver com a mensagem "Nenhum chamado", ignora o filtro
+  if (linhas.length === 1 && linhas[0].textContent.includes("Nenhum")) return;
+
+  for (let i = 0; i < linhas.length; i++) {
+    const colunas = linhas[i].getElementsByTagName("td");
+    let encontrou = false;
+
+    for (let j = 0; j < colunas.length; j++) {
+      const conteudo = colunas[j].textContent || colunas[j].innerText;
+      if (conteudo.toLowerCase().indexOf(filtro) > -1) {
+        encontrou = true;
+        break;
+      }
+    }
+    linhas[i].style.display = encontrou ? "" : "none";
+  }
+};
+
+  function animate() {
+    if (document.getElementById('login').style.display !== 'none') {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+      }
+      connect();
+    }
+    requestAnimationFrame(animate);
+  }
+
+  resize();
+  animate();
+})();
+
+
+let idParaExcluirPermanente = null;
+
+function prepararExclusao(id) {
+  idParaExcluirPermanente = id;
+  document.getElementById("modalExcluir").style.display = "flex";
+}
+
+function fecharModalExcluir() {
+  document.getElementById("modalExcluir").style.display = "none";
+  idParaExcluirPermanente = null;
+}
+
+document.getElementById("confirmarExclusaoBtn").onclick = function() {
+  if (!idParaExcluirPermanente) return;
+
+  const id = idParaExcluirPermanente;
+  
+  // 1. Localiza a linha (TR) na tabela para aplicar o efeito
+  // Buscamos o botão que tem o ID na função prepararExclusao
+  const btn = document.querySelector(`button[onclick="prepararExclusao('${id}')"]`);
+  const tr = btn ? btn.closest("tr") : null;
+
+  if (tr) {
+    tr.classList.add("fade-excluir");
+  }
+
+  // 2. Aguarda a animação (500ms) antes de deletar do Firebase
+  setTimeout(() => {
+    const chamadoRef = firebaseRef(db, `arquivados/${id}`);
+
+    firebaseRemove(chamadoRef)
+      .then(() => {
+        mostrarPopup("🗑️ Registro apagado definitivamente!");
+        fecharModalExcluir();
+      })
+      .catch((error) => {
+        console.error("Erro ao excluir:", error);
+        mostrarPopup("❌ Erro ao excluir registro.");
+        // Se der erro, remove a classe para a linha voltar a aparecer
+        if (tr) tr.classList.remove("fade-excluir");
+      });
+  }, 500);
+};
 </script>
 
 </body>
