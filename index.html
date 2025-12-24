@@ -181,30 +181,14 @@ header img { height: 60px; }
   header img {height: 48px;}
 }
 
-/* ===== CHATBOT ===== */
-#rh-bot {
-  position: fixed;
-  bottom: 100px;
-  right: 25px;
-  width: 340px;
-  height: 380px; /* tamanho fixo */
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 10px 35px rgba(0,0,0,.35);
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 9999;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  color: #111;
-}
+
 /* ===== CHATBOT FIXO E CORRIGIDO ===== */
 #rh-bot {
   position: fixed;
-  bottom: 100px;
+  bottom: 80px;   /* Um pouco mais baixo */
   right: 25px;
-  width: 340px;
-  height: 460px; /* altura do chat */
+  width: 260px;   /* Reduzi de 340px para 300px */
+  height: 350px;  /* Reduzi de 460px para 400px */
   background: #fff;
   border-radius: 14px;
   box-shadow: 0 10px 35px rgba(0,0,0,.35);
@@ -214,20 +198,19 @@ header img { height: 60px; }
   z-index: 9999;
   font-family: 'Segoe UI', Arial, sans-serif;
   color: #111;
-  isolation: isolate; /* impede que estilos externos escapem */
-  position: fixed;
+  isolation: isolate;
 }
 
 #rh-bot header {
   position: relative; /* garante que o header fique dentro do chat */
   background: #16a34a;
   color: #fff;
-  padding: 12px 14px;
+  padding: 10px 14px;
   font-weight: bold;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 15px;
+  font-size: 14px;
   flex-shrink: 0;
   z-index: 2;
 }
@@ -267,9 +250,9 @@ header img { height: 60px; }
   flex-shrink: 0;
 }
 .bot div, .user div {
-  padding: 8px 10px;
+  padding: 6px 10px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.4;
 }
 .bot div { background: #e5e7eb; color: #111; }
@@ -342,8 +325,8 @@ header img { height: 60px; }
 @media(max-width:600px){
   #rh-bot {
     right: 10px;
-    width: 90%;
-    height: 320px;
+    width: 85%;
+    height: 380px;
   }
 }
 </style>
@@ -390,6 +373,35 @@ header img { height: 60px; }
   <div id="chat" class="chat"></div>
   <div class="input" id="inputArea"></div>
 </div>
+
+<!-- 🔥 Firebase Integration - Inserir acima do seu script principal -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
+
+  // Configuração do Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyDK9pXOo0-brSHXQe9TMANhTYECp55mWVM",
+    authDomain: "pupa-57c84.firebaseapp.com",
+    databaseURL: "https://pupa-57c84-default-rtdb.firebaseio.com",
+    projectId: "pupa-57c84",
+    storageBucket: "pupa-57c84.firebasestorage.app",
+    messagingSenderId: "159582700348",
+    appId: "1:159582700348:web:38e894ba4d0b98c48e1439",
+    measurementId: "G-616G7GCMGE"
+  };
+
+  // Inicializa Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Expondo funções para o script do chatbot usar
+  window.db = db;
+  window.firebaseRef = ref;
+  window.firebasePush = push;
+  window.firebaseSet = set;
+</script>
+
 
 <script>
 /* ===== PRELOADER ===== */
@@ -453,14 +465,14 @@ const respostasIA = {
 };
 
 const steps = [
- {k:"nome",q:"Qual seu nome completo?",t:"text"},
+ {k:"nome",q:"Qual seu NOME COMPLETO?",t:"text"},
  {k:"filial",q:"Qual sua filial?",t:"opt",o:["Matriz - Tecmar","Outra"]},
- {k:"setor",q:"Qual seu setor?",t:"text"},
- {k:"regiao",q:"Qual sua Zona de Trabalho?",t:"opt",o:["Sul","Norte"]},
+ {k:"setor",q:"Qual seu departamento? Ex: Almoxarifado,Logistica, Etc...",t:"text"},
+ {k:"regiao",q:"Qual sua Zona de Trabalho?",t:"opt",o:["Sul","Nordeste"]},
  {k:"turno",q:"Turno?",t:"opt",o:["Manhã","Tarde","Noite"]},
- {k:"funcao",q:"Qual sua função?",t:"text"},
- {k:"assunto",q:"Assunto?",t:"opt",o:["Ponto","Benefícios","Salário","Faltas","Atestados","Outros"]},
- {k:"mensagem",q:"Descreva sua solicitação:",t:"area"}
+ {k:"funcao",q:"Qual seu cargo?",t:"text"},
+ {k:"assunto",q:"Qual Assunto?",t:"opt",o:["Ponto","Benefícios","Salário","Faltas","Atestados","Outros"]},
+ {k:"mensagem",q:"Descreva sua solicitação com detalhes:",t:"area"}
 ];
 let step=0; let contador=1;
 const chat=document.getElementById("chat");
@@ -558,8 +570,9 @@ function next(){
   }
 
   const ticket = gerarTicket();
+  const dataAtualISO = new Date().toISOString(); // Gera a data no formato correto
 
-  // Cria o objeto do chamado
+  // 1. Objeto para o localStorage (Opcional, mas bom manter igual)
   const chamado = {
     ticket: ticket,
     nome: data.nome,
@@ -570,15 +583,15 @@ function next(){
     funcao: data.funcao,
     assunto: data.assunto,
     mensagem: data.mensagem,
-    status: "Aguardando"
+    status: "Aguardando",
+    data: dataAtualISO // <--- Adicionado aqui
   };
 
-  // Salva o chamado no localStorage para o painel ler
   const lista = JSON.parse(localStorage.getItem("chamados") || "[]");
   lista.push(chamado);
   localStorage.setItem("chamados", JSON.stringify(lista));
 
-  // Cria e envia a mensagem pro WhatsApp
+  // 2. Montagem da mensagem WhatsApp (Continua igual...)
   const msg = 
   `📋 *Ticket Nº ${ticket}*\n\n` +
   `👤 *Nome:* ${data.nome}\n` +
@@ -592,10 +605,25 @@ function next(){
 
   const msgEncoded = encodeURIComponent(msg);
   const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${msgEncoded}`;
-  window.open(url, "_blank");
 
-  // Mostra confirmação no chat
-  botMsg(`✅ Seu chamado foi registrado com o número <b>Nº ${ticket}</b> e enviado ao RH. Você receberá retorno em até 24h úteis.`);
+  // 3. --- ENVIO PARA O FIREBASE (O PONTO PRINCIPAL) ---
+  const listaRef = window.firebaseRef(window.db, 'chamados/');
+  window.firebasePush(listaRef, {
+    ticket,
+    nome: data.nome,
+    filial: data.filial,
+    setor: data.setor,
+    regiao: data.regiao,
+    turno: data.turno,
+    funcao: data.funcao,
+    assunto: data.assunto,
+    mensagem: data.mensagem,
+    status: "Aguardando",
+    data: dataAtualISO // <--- ESSA LINHA resolve o problema do Painel
+  });
+
+  window.open(url, "_blank");
+  botMsg(`✅ Seu chamado foi registrado com o número <b>Nº ${ticket}</b> e enviado ao RH.`);
 }
 
 
