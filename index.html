@@ -527,28 +527,42 @@ function next(){
 
   const ticket = gerarTicket();
 
-  // Monta a mensagem de forma legível e sem o símbolo "#"
+  // Cria o objeto do chamado
+  const chamado = {
+    ticket: ticket,
+    nome: data.nome,
+    filial: data.filial,
+    setor: data.setor,
+    regiao: data.regiao,
+    turno: data.turno,
+    funcao: data.funcao,
+    assunto: data.assunto,
+    mensagem: data.mensagem,
+    status: "Aguardando"
+  };
+
+  // Salva o chamado no localStorage para o painel ler
+  const lista = JSON.parse(localStorage.getItem("chamados") || "[]");
+  lista.push(chamado);
+  localStorage.setItem("chamados", JSON.stringify(lista));
+
+  // Cria e envia a mensagem pro WhatsApp
   const msg = 
-  `📍Ticket Nº ${ticket}\n\n` +
-  `👨‍🏭Nome: ${data.nome}\n` +
-  `🏢Filial: ${data.filial}\n` +
-  `📦Setor: ${data.setor}\n` +
-  `🚩Região: ${data.regiao}\n` +
-  `🕐Turno: ${data.turno}\n` +
-  `🥾Função: ${data.funcao}\n\n` +
-  `💬Assunto: ${data.assunto}\n` +
-  `Mensagem: ${data.mensagem}`;
+  `📋 *Ticket Nº ${ticket}*\n\n` +
+  `👤 *Nome:* ${data.nome}\n` +
+  `🏢 *Filial:* ${data.filial}\n` +
+  `💼 *Setor:* ${data.setor}\n` +
+  `📍 *Região:* ${data.regiao}\n` +
+  `🕒 *Turno:* ${data.turno}\n` +
+  `⚙️ *Função:* ${data.funcao}\n\n` +
+  `📝 *Assunto:* ${data.assunto}\n` +
+  `💬 *Mensagem:* ${data.mensagem}`;
 
-  // Codifica tudo corretamente para o WhatsApp
   const msgEncoded = encodeURIComponent(msg);
-
-  // Monta o link do WhatsApp (sem fragmentos)
   const url = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${msgEncoded}`;
-
-  // Abre o WhatsApp
   window.open(url, "_blank");
 
-  // Confirmação visual no chat
+  // Mostra confirmação no chat
   botMsg(`✅ Seu chamado foi registrado com o número <b>Nº ${ticket}</b> e enviado ao RH. Você receberá retorno em até 24h úteis.`);
 }
 
@@ -560,5 +574,6 @@ render();
 
 </body>
 </html>
+
 
 
