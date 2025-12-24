@@ -58,10 +58,7 @@ body {
 }
 
 /* ===== PAINEL ===== */
-#painel {
-  display: none;
-  padding: 20px;
-}
+#painel { display: none; padding: 20px; }
 header {
   display: flex;
   justify-content: space-between;
@@ -82,11 +79,29 @@ header button {
   cursor: pointer;
   font-weight: 600;
 }
-header button:hover {
+header button:hover { background: #e5e7eb; }
+
+/* ===== TABS ===== */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.tab {
+  padding: 8px 16px;
+  border-radius: 6px;
   background: #e5e7eb;
+  color: #111;
+  font-weight: 500;
+  cursor: pointer;
+  transition: .3s;
+}
+.tab.active {
+  background: #16a34a;
+  color: #fff;
 }
 
-/* ===== TABELA ===== */
+/* ===== TABELAS ===== */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -105,14 +120,21 @@ th {
   color: #333;
   font-weight: 600;
 }
-tr:hover {
-  background: #f3f4f6;
-}
+tr:hover { background: #f3f4f6; }
 select {
   padding: 6px;
   border-radius: 6px;
   border: 1px solid #ccc;
 }
+button.arquivar {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #16a34a;
+  transition: .2s;
+}
+button.arquivar:hover { transform: scale(1.2); }
 
 /* ===== POPUP ===== */
 #popup {
@@ -153,6 +175,11 @@ select {
     <button onclick="logout()">Sair</button>
   </header>
 
+  <div class="tabs">
+    <div class="tab active" onclick="mudarAba('ativos')">Chamados Ativos</div>
+    <div class="tab" onclick="mudarAba('arquivados')">Arquivados</div>
+  </div>
+
   <table id="tabela">
     <thead>
       <tr>
@@ -163,6 +190,7 @@ select {
         <th>Assunto</th>
         <th>Mensagem</th>
         <th>Status</th>
+        <th>Ações</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -191,16 +219,34 @@ function logout(){
   document.getElementById("senha").value="";
 }
 
-// ===== CARREGAR CHAMADOS =====
+// ===== TABELAS =====
 if(!localStorage.getItem("chamados"))
   localStorage.setItem("chamados", JSON.stringify([]));
+if(!localStorage.getItem("arquivados"))
+  localStorage.setItem("arquivados", JSON.stringify([]));
+
+let abaAtual = "ativos";
+
+function mudarAba(aba){
+  abaAtual = aba;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`.tab:nth-child(${aba === 'ativos' ? 1 : 2})`).classList.add('active');
+  carregarChamados();
+}
 
 function carregarChamados(){
-  const dados = JSON.parse(localStorage.getItem("chamados"));
+  const dados = JSON.parse(localStorage.getItem(abaAtual === "ativos" ? "chamados" : "arquivados"));
   const tbody = document.querySelector("#tabela tbody");
   tbody.innerHTML = "";
+
+  if(dados.length === 0){
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#666;">Nenhum chamado ${abaAtual === 'ativos' ? 'ativo' : 'arquivado'}.</td></tr>`;
+    return;
+  }
+
   dados.forEach((c, i)=>{
     const tr = document.createElement("tr");
+    tr.style.transition = "all 0.4s ease";
     tr.innerHTML = `
       <td>${c.ticket}</td>
       <td>${c.nome}</td>
@@ -209,12 +255,16 @@ function carregarChamados(){
       <td>${c.assunto}</td>
       <td>${c.mensagem}</td>
       <td>
-        <select onchange="atualizarStatus(${i}, this.value)">
-          <option ${c.status==="Aguardando"?"selected":""}>Aguardando</option>
-          <option ${c.status==="Em tratamento"?"selected":""}>Em tratamento</option>
-          <option ${c.status==="Aguardando devolutiva"?"selected":""}>Aguardando devolutiva</option>
-          <option ${c.status==="Finalizado"?"selected":""}>Finalizado</option>
-        </select>
+        ${abaAtual === "ativos" ? `
+          <select onchange="atualizarStatus(${i}, this.value)">
+            <option ${c.status==="Aguardando"?"selected":""}>Aguardando</option>
+            <option ${c.status==="Em tratamento"?"selected":""}>Em tratamento</option>
+            <option ${c.status==="Aguardando devolutiva"?"selected":""}>Aguardando devolutiva</option>
+            <option ${c.status==="Finalizado"?"selected":""}>Finalizado</option>
+          </select>` : c.status}
+      </td>
+      <td>
+        ${abaAtual === "ativos" ? `<button class="arquivar" title="Arquivar chamado" onclick="arquivarChamado(${i}, this)">📦</button>` : ""}
       </td>`;
     tbody.appendChild(tr);
   });
@@ -224,24 +274,52 @@ function atualizarStatus(index, valor){
   const dados = JSON.parse(localStorage.getItem("chamados"));
   dados[index].status = valor;
   localStorage.setItem("chamados", JSON.stringify(dados));
+  carregarChamados();
 }
 
-// ===== POP-UP NOVOS CHAMADOS =====
-function mostrarPopup(){
+/* ===== ANIMAÇÃO + ALERTA DE ARQUIVAR ===== */
+function arquivarChamado(index, btn){
+  const tr = btn.closest("tr");
+  tr.style.opacity = "0";
+  tr.style.transform = "translateX(40px)";
+
+  setTimeout(()=>{
+    const chamados = JSON.parse(localStorage.getItem("chamados"));
+    const arquivados = JSON.parse(localStorage.getItem("arquivados"));
+    const movido = chamados.splice(index, 1)[0];
+    movido.status = "Arquivado";
+    arquivados.push(movido);
+    localStorage.setItem("chamados", JSON.stringify(chamados));
+    localStorage.setItem("arquivados", JSON.stringify(arquivados));
+    carregarChamados();
+    mostrarPopup("✅ Chamado arquivado com sucesso!");
+  }, 350);
+}
+
+/* ===== POPUP GERAL ===== */
+function mostrarPopup(texto="🔔 Novo chamado recebido!"){
   const pop = document.getElementById("popup");
+  pop.innerText = texto;
+  pop.style.background = texto.includes("arquivado") ? "#22c55e" : "#16a34a";
   pop.style.display="block";
-  setTimeout(()=>pop.style.display="none", 4000);
+  pop.style.opacity="1";
+  setTimeout(()=>{
+    pop.style.opacity="0";
+    setTimeout(()=>pop.style.display="none", 500);
+  }, 3000);
 }
 
+/* ===== DETECTOR DE NOVOS CHAMADOS ===== */
 window.lastCount = JSON.parse(localStorage.getItem("chamados")).length;
 setInterval(()=>{
   const novos = JSON.parse(localStorage.getItem("chamados"));
   if(novos.length > window.lastCount){
-    mostrarPopup();
-    carregarChamados();
+    mostrarPopup("🔔 Novo chamado recebido!");
+    if(abaAtual === "ativos") carregarChamados();
   }
   window.lastCount = novos.length;
 }, 5000);
 </script>
+
 </body>
 </html>
